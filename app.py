@@ -1,4 +1,7 @@
 import streamlit as st
+
+# Scrapping the web for news articles
+
 import urllib.request, urllib.parse, urllib.error
 from bs4 import BeautifulSoup
 import ssl
@@ -8,12 +11,10 @@ ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode =  ssl.CERT_NONE
 
-# url = input('Enter url - ')
 url = 'https://www.ktpress.rw/2021/01/nepad-has-remained-true-to-its-vision-president-kagame-on-20th-anniversary/'
 
 all_articles = {}
 documents = []
-
 
 class Article:
     def __init__(self, title, url):
@@ -53,15 +54,18 @@ def scrap(url, count):
 
 
 st.header('Scrapping news articles')
-scrap(url, 1)
+depth = st.number_input('Recursion depth', 1, 20, 2)
+scrap(url, depth)
 
+
+st.write('Documents scrapped')
+st.write(documents)
+
+# Clustering
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_rand_score
-
-st.write('Documents scrapped')
-st.write(documents)
 
 vectorizer = TfidfVectorizer(stop_words='english')
 X = vectorizer.fit_transform(documents)
